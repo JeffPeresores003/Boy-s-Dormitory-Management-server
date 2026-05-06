@@ -65,8 +65,8 @@ router.get("/", async (req, res) => {
   }
 });
 
-// ---------------- Create Announcement (Admin) ---------------- //
-router.post("/", authorize('admin'), async (req, res) => {
+// ---------------- Create Announcement (Admin/Cashier) ---------------- //
+router.post("/", authorize('admin', 'cashier'), async (req, res) => {
   try {
     const { title, content, category } = req.body;
 
@@ -106,8 +106,8 @@ router.post("/", authorize('admin'), async (req, res) => {
   }
 });
 
-// ---------------- Update Announcement (Admin) ---------------- //
-router.put("/:id", authorize('admin'), async (req, res) => {
+// ---------------- Update Announcement (Admin/Cashier) ---------------- //
+router.put("/:id", authorize('admin', 'cashier'), async (req, res) => {
   try {
     const [existing] = await pool.execute("SELECT * FROM Announcements WHERE id = ?", [req.params.id]);
     if (!existing || existing.length === 0) {
@@ -153,8 +153,8 @@ router.put("/:id", authorize('admin'), async (req, res) => {
   }
 });
 
-// ---------------- Delete Announcement (Admin) ---------------- //
-router.delete("/:id", authorize('admin'), async (req, res) => {
+// ---------------- Delete Announcement (Admin/Cashier) ---------------- //
+router.delete("/:id", authorize('admin', 'cashier'), async (req, res) => {
   try {
     const [existing] = await pool.execute("SELECT id FROM Announcements WHERE id = ?", [req.params.id]);
     if (!existing || existing.length === 0) {

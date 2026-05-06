@@ -4,9 +4,9 @@ const pool = require('../config/config');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-// All routes require admin authentication
+// All routes require admin or cashier authentication
 router.use(protect);
-router.use(authorize('admin'));
+router.use(authorize('admin', 'cashier'));
 
 // ---------------- Get All Maintenance Requests ---------------- //
 router.get("/", async (req, res) => {

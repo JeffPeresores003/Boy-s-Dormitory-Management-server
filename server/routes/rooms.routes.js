@@ -5,9 +5,9 @@ const { protect, authorize } = require('../middleware/authMiddleware');
 const { logActivity } = require('../utils/activityLogger');
 const router = express.Router();
 
-// All routes require admin authentication
+// All routes require admin or cashier authentication
 router.use(protect);
-router.use(authorize('admin'));
+router.use(authorize('admin', 'cashier'));
 
 // Helper: update room status based on occupancy
 const updateRoomStatus = async (roomId) => {

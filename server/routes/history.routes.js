@@ -6,7 +6,7 @@ const { ensureActivityTable } = require('../utils/activityLogger');
 const router = express.Router();
 
 router.use(protect);
-router.use(authorize('admin'));
+router.use(authorize('admin', 'cashier'));
 
 router.get('/', async (req, res) => {
   try {

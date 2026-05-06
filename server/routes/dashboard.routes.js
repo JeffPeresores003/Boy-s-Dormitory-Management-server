@@ -4,9 +4,9 @@ const pool = require('../config/config');
 const { protect, authorize } = require('../middleware/authMiddleware');
 const router = express.Router();
 
-// All dashboard routes require admin authentication
+// All dashboard routes require admin or cashier authentication
 router.use(protect);
-router.use(authorize('admin'));
+router.use(authorize('admin', 'cashier'));
 
 // ---------------- Get Dashboard Stats ---------------- //
 router.get("/stats", async (req, res) => {
