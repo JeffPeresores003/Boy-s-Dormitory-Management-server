@@ -197,20 +197,29 @@ router.post("/", async (req, res) => {
   try {
     const { firstName, lastName, email, contact, type, department, roomId, guardianName, guardianContact, remarks, amount, duration, payment } = req.body;
 
-    if (!firstName || !lastName || !email || !contact || !type || !roomId || amount === undefined || amount === null || amount === '' || !duration) {
-      return res.status(400).json({ message: 'First name, last name, email, contact, type, room, amount, and duration are required' });
+    if (!firstName || !lastName || !email || !contact || !type || !roomId) {
+      return res.status(400).json({ message: 'First name, last name, email, contact, type, and room are required' });
     }
 
     if (!['student', 'staff', 'faculty'].includes(type)) {
       return res.status(400).json({ message: 'Type must be student, staff, or faculty' });
     }
 
-    const parsedAmount = parseFloat(amount);
-    if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
-      return res.status(400).json({ message: 'Amount must be a valid number greater than 0' });
+    let parsedAmount = 0;
+    if (amount !== undefined && amount !== null && amount !== '') {
+      parsedAmount = parseFloat(amount);
+      if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+        return res.status(400).json({ message: 'Amount must be a valid number greater than 0' });
+      }
+    } else if (payment && payment.amount !== undefined && payment.amount !== null && payment.amount !== '') {
+      parsedAmount = parseFloat(payment.amount);
+      if (!Number.isFinite(parsedAmount) || parsedAmount <= 0) {
+        return res.status(400).json({ message: 'Payment amount must be a valid number greater than 0' });
+      }
     }
 
-    if (!['1 sem', '2 sem'].includes(duration)) {
+    const resolvedDuration = duration || '1 sem';
+    if (!['1 sem', '2 sem'].includes(resolvedDuration)) {
       return res.status(400).json({ message: 'Duration must be either 1 sem or 2 sem' });
     }
 
@@ -247,7 +256,7 @@ router.post("/", async (req, res) => {
     const [result] = await pool.execute(
       `INSERT INTO Tenants (tenantNumber, firstName, lastName, email, contact, type, department, roomId, guardianName, guardianContact, remarks, amount, duration, createdAt, updatedAt)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
-      [tenantNumber, firstName, lastName, email, contact, type, department || null, roomId, guardianName || null, guardianContact || null, remarks || null, parsedAmount, duration]
+      [tenantNumber, firstName, lastName, email, contact, type, department || null, roomId, guardianName || null, guardianContact || null, remarks || null, parsedAmount, resolvedDuration]
     );
 
     // Update room status
